@@ -7,8 +7,15 @@ export class MainScene extends Phaser.Scene {
         this.cursors = null;
         this.map = null;
         this.worldLayer = null;
+        this.roadLayer = null;
+        this.buildingLayer = null;
         this.playerSpeed = 150;
         this.isInitialized = false; // Add initialization flag
+        
+        // Define road tile IDs (tiles player can walk on)
+        this.roadTiles = [469, 434, 461, 407, 462, 463, 464, 435, 436, 437, 470];
+        // Bicycle tile ID for spawn point
+        this.bicycleTileId = 470;
     }
 
     preload() {
@@ -17,7 +24,7 @@ export class MainScene extends Phaser.Scene {
         // Load assets with error handling
         try {
             // First load the map JSON
-            this.load.tilemapTiledJSON('map', 'assets/lasttry.tmj');
+            this.load.tilemapTiledJSON('map', 'assets/llasttry.tmj');
             
             // Load the tileset image - try with both names to be safe
             this.load.image('tileset', 'assets/tilemap_packed.png');
@@ -116,11 +123,32 @@ export class MainScene extends Phaser.Scene {
                     return;
                 }
                 
-                // Set the world layer for collisions (assuming it's the first layer)
-                if (layerName === 'Tile Layer 1' || layerName === 'shed' || layerName === 'road') {
-                    this.worldLayer = createdLayer;
-                    // Set collision for tiles with 'collides' property
-                    createdLayer.setCollisionByProperty({ collides: true });
+                // Store road layer reference
+                if (layerName === 'ROADS') {
+                    this.roadLayer = createdLayer;
+                    this.roadLayer.setDepth(1);
+                }
+                
+                // Store building layer and set collision
+                if (layerName === 'BUILDIGS' || layerName === 'Shed and win') {
+                    if (!this.buildingLayer) {
+                        this.buildingLayer = createdLayer;
+                    }
+                    // Set collision for all non-zero tiles in building layers
+                    createdLayer.setCollisionByExclusion([-1, 0]);
+                    createdLayer.setDepth(5);
+                }
+                
+                // Set collision for sidewalks and green areas
+                if (layerName === 'sidewalks' || layerName === 'GReen') {
+                    createdLayer.setCollisionByExclusion([-1, 0]);
+                    createdLayer.setDepth(3);
+                }
+                
+                // Assets layer (obstacles like poles, traffic lights, etc.)
+                if (layerName === 'Assets') {
+                    createdLayer.setCollisionByExclusion([-1, 0]);
+                    createdLayer.setDepth(6);
                 }
                 
                 // Set depth for proper layering (adjust as needed)
@@ -132,15 +160,18 @@ export class MainScene extends Phaser.Scene {
                     createdLayer.setDepth(2);  // Road layer
                 } else if (layerName === 'shed') {
                     createdLayer.setDepth(1);  // Shed layer (background)
-                } else {
+                } else if (!createdLayer.depth) {
                     createdLayer.setDepth(0);  // Default layer (base)
                 }
             });
             
-            if (!this.worldLayer) {
-                console.warn('No valid collision layer found. Using first available layer.');
-                this.worldLayer = this.map.layers[0];
+            // Use building layer as world layer for collisions
+            if (!this.buildingLayer && this.map.layers.length > 0) {
+                console.warn('No building layer found. Using first available layer.');
+                this.buildingLayer = this.map.layers[0];
             }
+            
+            this.worldLayer = this.buildingLayer;
             
             // Set up physics world bounds based on the map size
             this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
@@ -164,8 +195,16 @@ export class MainScene extends Phaser.Scene {
             // Set player to topmost layer (higher than all map layers)
             this.player.setDepth(100);
             
-            // Set up collision with the world layer
-            this.physics.add.collider(this.player, this.worldLayer);
+            // Set up collision with all obstacle layers
+            this.map.layers.forEach(layer => {
+                const layerName = layer.name || 'unnamed';
+                const createdLayer = this.map.getLayer(layerName).tilemapLayer;
+                
+                // Add colliders for all non-road layers
+                if (layerName !== 'ROADS' && createdLayer) {
+                    this.physics.add.collider(this.player, createdLayer);
+                }
+            });
             
             // Set up camera to follow player
             this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
@@ -202,14 +241,48 @@ export class MainScene extends Phaser.Scene {
     }
     
     findSpawnPoint() {
-        // Look for an object layer with spawn points
-        const objectLayer = this.map.getObjectLayer('Objects');
-        if (objectLayer) {
-            const spawnPoint = objectLayer.objects.find(obj => obj.name === 'SpawnPoint');
-            if (spawnPoint) {
-                return { x: spawnPoint.x, y: spawnPoint.y };
+        // Find a bicycle tile (tile 470) on the ROADS layer
+        if (!this.roadLayer) {
+            console.warn('Road layer not found, using default spawn point');
+            return null;
+        }
+        
+        // Search for bicycle tiles in the road layer
+        const bicyclePositions = [];
+        
+        for (let y = 0; y < this.map.height; y++) {
+            for (let x = 0; x < this.map.width; x++) {
+                const tile = this.roadLayer.getTileAt(x, y);
+                if (tile && tile.index === this.bicycleTileId) {
+                    // Convert tile coordinates to world coordinates (center of tile)
+                    bicyclePositions.push({
+                        x: (x * this.map.tileWidth) + (this.map.tileWidth / 2),
+                        y: (y * this.map.tileHeight) + (this.map.tileHeight / 2)
+                    });
+                }
             }
         }
+        
+        if (bicyclePositions.length > 0) {
+            // Return the first bicycle position found
+            console.log(`Found ${bicyclePositions.length} bicycle spawn points`);
+            return bicyclePositions[0];
+        }
+        
+        // Fallback: find any road tile
+        for (let y = 0; y < this.map.height; y++) {
+            for (let x = 0; x < this.map.width; x++) {
+                const tile = this.roadLayer.getTileAt(x, y);
+                if (tile && this.roadTiles.includes(tile.index)) {
+                    console.log('No bicycle tile found, using first road tile');
+                    return {
+                        x: (x * this.map.tileWidth) + (this.map.tileWidth / 2),
+                        y: (y * this.map.tileHeight) + (this.map.tileHeight / 2)
+                    };
+                }
+            }
+        }
+        
         return null;
     }
     
@@ -255,27 +328,54 @@ export class MainScene extends Phaser.Scene {
                 return;
             }
             
-            // Handle movement
+            // Handle movement with road restriction
             let moving = false;
+            let velocityX = 0;
+            let velocityY = 0;
             
-            // Horizontal movement
+            // Calculate intended movement
             if (this.cursors.left.isDown) {
-                this.player.setVelocityX(-this.playerSpeed);
+                velocityX = -this.playerSpeed;
                 this.player.flipX = true;
                 moving = true;
             } else if (this.cursors.right.isDown) {
-                this.player.setVelocityX(this.playerSpeed);
+                velocityX = this.playerSpeed;
                 this.player.flipX = false;
                 moving = true;
             }
             
-            // Vertical movement (separate from horizontal to allow diagonal movement)
             if (this.cursors.up.isDown) {
-                this.player.setVelocityY(-this.playerSpeed);
+                velocityY = -this.playerSpeed;
                 moving = true;
             } else if (this.cursors.down.isDown) {
-                this.player.setVelocityY(this.playerSpeed);
+                velocityY = this.playerSpeed;
                 moving = true;
+            }
+            
+            // Check if the intended position is on a road tile
+            if (moving && this.roadLayer) {
+                // Calculate future position
+                const futureX = this.player.x + (velocityX * 0.016); // Approximate next frame position
+                const futureY = this.player.y + (velocityY * 0.016);
+                
+                // Convert to tile coordinates
+                const tileX = Math.floor(futureX / this.map.tileWidth);
+                const tileY = Math.floor(futureY / this.map.tileHeight);
+                
+                // Get the tile at the future position
+                const tile = this.roadLayer.getTileAt(tileX, tileY);
+                
+                // Only allow movement if on a road tile
+                if (tile && this.roadTiles.includes(tile.index)) {
+                    this.player.setVelocityX(velocityX);
+                    this.player.setVelocityY(velocityY);
+                } else {
+                    // Stop movement if trying to move off road
+                    this.player.setVelocity(0);
+                    moving = false;
+                }
+            } else if (!moving) {
+                this.player.setVelocity(0);
             }
             
             // Play idle animation when not moving

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="16" tileheight="16" infinite="0" nextlayerid="16" nextobjectid="57">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="16" tileheight="16" infinite="0" nextlayerid="17" nextobjectid="64">
  <tileset firstgid="1" name="tilemap_packed" tilewidth="16" tileheight="16" tilecount="486" columns="27">
   <image source="D:/downloads/kenney_rpg-urban-pack (1)/Tilemap/tilemap_packed.png" width="432" height="288"/>
  </tileset>
@@ -261,13 +261,13 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,436,436,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,459,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,250,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,250,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="8" name="Object Layer 1" visible="0">
+ <objectgroup id="8" name="Object Layer 1">
   <object id="46" x="436.333" y="305" width="105.333" height="190.333"/>
   <object id="47" x="272.667" y="305.333" width="128" height="188.667"/>
   <object id="48" x="400.667" y="303.667" width="29" height="174.667"/>
@@ -279,5 +279,17 @@
   <object id="54" x="17.3333" y="143.333" width="79.3333" height="15.3333"/>
   <object id="55" x="64" y="158" width="15.3333" height="17.3333"/>
   <object id="56" x="14.6667" y="158.667" width="17.3333" height="18"/>
+ </objectgroup>
+ <objectgroup id="16" name="Object Layer 2">
+  <properties>
+   <property name="triggering" type="bool" value="true"/>
+  </properties>
+  <object id="57" x="336" y="575.333" width="135.333" height="30"/>
+  <object id="58" x="338" y="509.667" width="37.3333" height="68.3333"/>
+  <object id="59" x="101.5" y="557.5" width="121.5" height="28"/>
+  <object id="60" x="194.5" y="527.5" width="40" height="57"/>
+  <object id="61" x="542.5" y="506.5" width="62" height="48.5"/>
+  <object id="62" x="444" y="249" width="58.5" height="53"/>
+  <object id="63" x="145" y="157.5" width="49" height="40"/>
  </objectgroup>
 </map>
