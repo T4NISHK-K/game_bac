@@ -17,7 +17,7 @@ export class MainScene extends Phaser.Scene {
         // Load assets with error handling
         try {
             // First load the map JSON
-            this.load.tilemapTiledJSON('map', 'assets/map.tmj');
+            this.load.tilemapTiledJSON('map', 'assets/lasttry.tmj');
             
             // Load the tileset image - try with both names to be safe
             this.load.image('tileset', 'assets/tilemap_packed.png');
