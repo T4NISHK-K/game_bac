@@ -537,30 +537,11 @@ export class MainScene extends Phaser.Scene {
         console.log('Gate button action triggered!');
         console.log('Current trigger zone:', this.currentTriggerZone);
         
-        // ============================================
-        // CUSTOMIZE THIS FUNCTION WITH YOUR ACTION
-        // ============================================
+        // Open the quiz page in a new window/tab
+        window.open('quiz.html', '_blank', 'width=800,height=600');
         
-        // Example: Play video
-        // this.playVideo();
-        
-        // Example: Open a menu
-        // this.openMenu();
-        
-        // Example: Trigger a cutscene
-        // this.startCutscene();
-        
-        // Example: Load a new scene
-        // this.scene.start('NextScene');
-        
-        // Example: Show a message
-        // this.showMessage('Gate activated!');
-        
-        // Example: Teleport player
-        // this.teleportPlayer({ x: 100, y: 100 });
-        
-        // For now, just log the action
-        alert('Gate button clicked! Customize onGateButtonClick() function with your action.');
+        // Hide the button after clicking
+        this.hideGateButton();
     }
     
     showGateButton() {

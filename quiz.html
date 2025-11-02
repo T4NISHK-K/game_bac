@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .quiz-section {
+            margin-bottom: 30px;
+        }
+
+        .question {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .option:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: #f0f9ff;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .result h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .result p {
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>🎮 Quiz Time!</h1>
+        
+        <div id="quiz-content">
+            <div class="quiz-section">
+                <div class="question">1. What is the capital of France?</div>
+                <div class="options">
+                    <div class="option" data-question="1" data-answer="Paris">Paris</div>
+                    <div class="option" data-question="1" data-answer="London">London</div>
+                    <div class="option" data-question="1" data-answer="Berlin">Berlin</div>
+                    <div class="option" data-question="1" data-answer="Madrid">Madrid</div>
+                </div>
+            </div>
+
+            <div class="quiz-section">
+                <div class="question">2. Which planet is known as the Red Planet?</div>
+                <div class="options">
+                    <div class="option" data-question="2" data-answer="Venus">Venus</div>
+                    <div class="option" data-question="2" data-answer="Mars">Mars</div>
+                    <div class="option" data-question="2" data-answer="Jupiter">Jupiter</div>
+                    <div class="option" data-question="2" data-answer="Saturn">Saturn</div>
+                </div>
+            </div>
+
+            <div class="quiz-section">
+                <div class="question">3. What is 2 + 2?</div>
+                <div class="options">
+                    <div class="option" data-question="3" data-answer="3">3</div>
+                    <div class="option" data-question="3" data-answer="4">4</div>
+                    <div class="option" data-question="3" data-answer="5">5</div>
+                    <div class="option" data-question="3" data-answer="6">6</div>
+                </div>
+            </div>
+
+            <button class="submit-btn" id="submit-btn">Submit Quiz</button>
+        </div>
+
+        <div class="result" id="result">
+            <h2>Quiz Results</h2>
+            <p id="score-text"></p>
+            <button class="back-btn" onclick="window.close()">Close Window</button>
+        </div>
+    </div>
+
+    <script>
+        // Correct answers
+        const correctAnswers = {
+            1: 'Paris',
+            2: 'Mars',
+            3: '4'
+        };
+
+        // Store user's answers
+        const userAnswers = {};
+
+        // Handle option selection
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const question = this.dataset.question;
+                const answer = this.dataset.answer;
+                
+                // Remove selected class from all options in this question
+                document.querySelectorAll(`.option[data-question="${question}"]`).forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Store the answer
+                userAnswers[question] = answer;
+            });
+        });
+
+        // Handle quiz submission
+        document.getElementById('submit-btn').addEventListener('click', function() {
+            // Check if all questions are answered
+            if (Object.keys(userAnswers).length < 3) {
+                alert('Please answer all questions before submitting!');
+                return;
+            }
+
+            // Calculate score
+            let score = 0;
+            for (let question in correctAnswers) {
+                if (userAnswers[question] === correctAnswers[question]) {
+                    score++;
+                }
+            }
+
+            // Display results
+            const percentage = (score / 3) * 100;
+            let message = '';
+            
+            if (percentage === 100) {
+                message = '🎉 Perfect! You got all answers correct!';
+            } else if (percentage >= 66) {
+                message = '👍 Great job! You did well!';
+            } else if (percentage >= 33) {
+                message = '😊 Not bad! Keep practicing!';
+            } else {
+                message = '💪 Keep trying! You can do better!';
+            }
+
+            document.getElementById('score-text').innerHTML = `
+                You scored <strong>${score} out of 3</strong> (${percentage.toFixed(0)}%)<br>
+                ${message}
+            `;
+
+            // Hide quiz content and show results
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('result').classList.add('show');
+        });
+    </script>
+</body>
+</html>
