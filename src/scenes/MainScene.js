@@ -46,6 +46,9 @@ export class MainScene extends Phaser.Scene {
             // Load player as a simple sprite
             this.load.image('player', 'assets/player.png');
             
+            // Load background music
+            this.load.audio('background-music', 'assets/tropic-dash-357222.mp3');
+            
             // Add load complete callback
             this.load.on('complete', () => {
                 console.log('All assets loaded successfully');
@@ -67,6 +70,13 @@ export class MainScene extends Phaser.Scene {
     create() {
         console.log('Creating game...');
         this.isInitialized = false; // Ensure we start uninitialized
+        
+        // Play background music
+        this.backgroundMusic = this.sound.add('background-music', {
+            volume: 0.5,
+            loop: true
+        });
+        this.backgroundMusic.play();
         
         try {
             // Create the tilemap
